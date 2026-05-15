@@ -1,0 +1,10 @@
+.icon {
+    font-family: 'Material Symbols Rounded';
+    font-variation-settings: 'FILL' 0, 'wgth' 500, 'GRAD' 0, 'opsz' 48;
+    user-select: none;
+    color: inherit;
+}
+
+.sm {font-size: 16px;}
+.md {font-size: 20px;}
+.lg {font-size: 24px;}

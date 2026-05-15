@@ -1,0 +1,86 @@
+/* ChatItem.module.css */
+.chatItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+}
+
+.menuWrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.chatItem.active {
+    background: #ebebeb;
+}
+
+/* el titulo se trunca con ... */
+.chatTitle {
+    font-size: 13px;
+    font-weight: 400;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0; /* clave para que el ellipsis funcione en flex */
+}
+
+.chatItem.active .chatTitle {
+    font-weight: 500;
+}
+
+/* el botón solo aparece en hover */
+.menuBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #999;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+    padding: 0;
+}
+
+
+@media(hover: hover) {
+    .chatItem:hover .menuBtn,
+    .chatItem.active .menuBtn {
+        opacity: 1;
+    }
+    
+    .chatItem:hover {
+        background: #f0f0f0;
+    }
+    
+    .menuBtn:hover {
+        background: #e0e0e0;
+        color: #1a1a1a;
+    }
+}
+
+/* dark mode */
+@media (prefers-color-scheme: dark) {
+  .chatItem:hover  { background: #1a1a1a; }
+  .chatItem.active { background: #1e1e1e; }
+
+  .chatTitle { color: #d0d0d0; }
+  .chatItem.active .chatTitle { color: #f0f0f0; }
+
+  .menuBtn:hover {
+    background: #2a2a2a;
+    color: #f0f0f0;
+  }
+}
