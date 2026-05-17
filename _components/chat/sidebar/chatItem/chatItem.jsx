@@ -1,35 +1,11 @@
 'use client';
-import { useState } from 'react';
-import { useModal } from '@/_contexts/modalContext';
 import style from './chatItem.module.css';
 import { Icon } from '@/_components/icon/icon';
 import ChatMenu from '../chatMenu/chatMenu';
-
+import useChatItem from '@/_services/useChatItem';
 
 export default function ChatItem({chat, active}) {
-    const [menuOpen, setMenuOpen] = useState(false);
-    const { openModal } = useModal();
-    
-    const handleAction = (actionId) => {
-        switch(actionId) {
-            case "update_chat":
-                setMenuOpen(false);
-                openModal("update_chat", {
-                    currentName: chat.title,
-                    onConfirm: (newName) => {
-                        console.log("renombrar: ", newName);
-                    }
-                });
-            case "delete_chat":
-                setMenuOpen(false);
-                openModal("delete_chat", {
-                    chatName: chat.title,
-                    onConfirm: () => {
-                        console.log("eliminar:", chat.id)
-                    }
-                })
-        }
-    }
+    const {menuOpen, setMenuOpen, handleAction} = useChatItem(chat);
     
     return (
         <div className={`${style.chatItem} ${active ? style.active : ''}`}>

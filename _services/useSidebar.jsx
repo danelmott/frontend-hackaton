@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useToast } from "@/_contexts/toastContext";
+import { toastApi, useToast } from "@/_contexts/toastContext";
 import { fetcher } from "@/_api/fetcher";
 import { useDebounce } from "@/_hooks/useDebounce";
 
@@ -17,7 +17,7 @@ export default function useSidebar() {
     
     async function handleCreateNewChat() {
         try {
-            const chat = await fetcher('/chats', {method: 'POST'});
+            await fetcher('/chats', {method: 'POST'});
         } 
         catch (error) {
             toast(error.message ?? "Hubo un error al intentar crear el chat", {type: 'error'})
@@ -52,6 +52,29 @@ export default function useSidebar() {
     useEffect(() => {
         handleSearchChat(debouncedSearchQuery);
     }, [debouncedSearchQuery, handleSearchChat]);
+    
+    useEffect(async () => {
+        async function getChats() {
+            try {
+                const data = await fetcher('/chats', {method: 'GET'});
+                setChats(data.chats);
+            } 
+            catch (error) {
+                switch(error.code) {
+                    case 'ERROR_GETTING_CHATS':
+                        toastApi.error(error.message ||'Hubo un error al intentar obtener los chats');
+                        
+                    case 'SERVER_INTERNAL_ERROR':
+                        toastApi.error(error.message ||'Error interno del servidor');
+                        
+                    case 'NETWORK_SERVER_ERROR':
+                        toastApi.error(error.message || 'No fue posible conectarse con el servidor');
+                }
+            }
+        }
+        
+        await getChats();
+    }, []); 
     
     return {
         chats,

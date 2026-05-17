@@ -11,7 +11,7 @@ const DATA_PRUEBA = [
 export default function chatLayout({children}) {
     const chatActive = 1
     return (
-        <div>
+        <div style={{display: 'flex'}}>
             <Sidebar chats={DATA_PRUEBA} activeChatId={chatActive}/>
             {children}
         </div>
