@@ -17,7 +17,7 @@ export default function useChatItem(chat) {
                     onConfirm: async (newName) => await handleUpdateChat(newName, chat.id)
                 });
                 break;
-
+                
             case 'delete_chat':
                 setMenuOpen(false);
                 openModal("delete_chat", {
@@ -51,15 +51,16 @@ export default function useChatItem(chat) {
             switch(error.code) {
                 case 'CHAT_NOT_FOUND':
                     toastApi.error(error.message || 'No fue posible encontrar el chat que intentas actualizar');
-                    
+                    break;
                 case 'ERROR_UPDATING_CHAT':
                     toastApi.error(error.message || 'No fue posible actualizar el chat');
-                    
+                    break;
                 case 'NETWORK_SERVER_ERROR':
                     toastApi.error(error.message || 'No fue posible conectarse con el servidor');
-                    
+                    break;
                 case 'SERVER_INTERNAL_ERROR':
                     toastApi.error(error.message || 'Error interno del servidor');
+                    break;
             }
         }
     }
@@ -76,15 +77,16 @@ export default function useChatItem(chat) {
             switch(error.code) {
                 case 'CHAT_NOT_FOUND':
                     toastApi.error(error.message ||'No fue posible encontrar el chat que intentas eliminar');
-                    
+                    break;
                 case 'ERROR_DELETING_CHAT':
                     toastApi.error(error.message || 'No fue posible eliminar el chat');
-                    
+                    break;
                 case 'NETWORK_SERVER_ERROR':
                     toastApi.error(error.message || 'No fue posible conectarse con el servidor');
-                    
+                    break;
                 case 'SERVER_INTERNAL_ERROR':
                     toastApi.error(error.message || 'Error interno del servidor');
+                    break;
             }
         }
     } 
@@ -102,18 +104,19 @@ export default function useChatItem(chat) {
             switch(error.code) {
                 case 'CHAT_NOT_FOUND':
                     toastApi.error(error.message || 'No fue posible encontrar el chat que intentas archivar');
-                    
+                    break;
                 case 'ERROR_ARCHIVING_CHAT':
                     toastApi.error(error.message || 'No fue posible archivar el chat');
-                    
+                    break;
                 case 'VALIDATION_ERROR':
                     toastApi.error('los datos enviados no fueron los esperados por el servidor');
-                    
+                    break;
                 case 'SERVER_INTERNAL_ERROR':
                     toastApi.error(error.message || 'Error interno del servidor');
-                    
+                    break;
                 case 'NETWORK_SERVER_ERROR':
                     toastApi.error(error.message || 'No fue posible conectar con el servidor');
+                    break;
                 }
         }
     }
@@ -124,25 +127,26 @@ export default function useChatItem(chat) {
                 method: 'PUT',
                 body: JSON.stringify({isStarred})
             });
-
+            
             return data;
         } 
         catch (error) {
             switch(error.code) {
-                case 'CHAT_NOT_FOUND':
-                    toastApi.error(error.message || 'No fue posible encontrar el chat que intentas archivar');
-                    
-                case 'ERROR_ARCHIVING_CHAT':
-                    toastApi.error(error.message || 'No fue posible archivar el chat');
-                    
+                case ('CHAT_NOT_FOUND'):
+                    toastApi.error(error.message || 'No fue posible encontrar el chat que intentas destacar');
+                    break;
+                case 'ERROR_STARRING_CHAT':
+                    toastApi.error(error.message || 'No fue posible destacar el chat');
+                    break;
                 case 'VALIDATION_ERROR':
                     toastApi.error('los datos enviados no fueron los esperados por el servidor');
-                    
+                    break;
                 case 'SERVER_INTERNAL_ERROR':
                     toastApi.error(error.message || 'Error interno del servidor');
-                    
+                    break;
                 case 'NETWORK_SERVER_ERROR':
                     toastApi.error(error.message || 'No fue posible conectar con el servidor');
+                    break
             }
         }
     }

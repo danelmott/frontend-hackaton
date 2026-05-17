@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from "react";
-import { toastApi, useToast } from "@/_contexts/toastContext";
+import { toastApi} from "@/_contexts/toastContext";
 import { fetcher } from "@/_api/fetcher";
 import { useDebounce } from "@/_hooks/useDebounce";
 
@@ -19,19 +19,17 @@ export default function useSidebar() {
         try {
             await fetcher('/chats', {method: 'POST'});
         } 
-        catch (error) {
-            toast(error.message ?? "Hubo un error al intentar crear el chat", {type: 'error'})
-            
+        catch (error) {            
             if(error.code === 'ERROR_CREATING_CHAT') {
-                toast(error.message ?? 'Hubo un error al intentar crear el chat', {type: 'error'});
+                return toastApi.error(error.message ?? 'Hubo un error al intentar crear el chat');
             }
             
             if(error.code === 'NETWORK_SERVER_ERROR') {
-                toast(error.message ?? 'Hubo un error al intentar conectarse con el servidor', {type: 'error'});
+                return toastApi.error(error.message ?? 'Hubo un error al intentar conectarse con el servidor')
             }
             
             if(error.code === 'SERVER_INTERNAL_ERROR') {
-                toast(error.message ?? "Hubo un error inesperado en el servidor", {type: 'error'});
+                return toastApi.error(error.message ?? 'Error interno del servidor');
             }
         }
     }
@@ -63,12 +61,13 @@ export default function useSidebar() {
                 switch(error.code) {
                     case 'ERROR_GETTING_CHATS':
                         toastApi.error(error.message ||'Hubo un error al intentar obtener los chats');
-                        
+                        break;
                     case 'SERVER_INTERNAL_ERROR':
                         toastApi.error(error.message ||'Error interno del servidor');
-                        
+                        break;
                     case 'NETWORK_SERVER_ERROR':
                         toastApi.error(error.message || 'No fue posible conectarse con el servidor');
+                        break;
                 }
             }
         }
