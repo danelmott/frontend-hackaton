@@ -1,5 +1,5 @@
 'use client';
-import useLogin from '@/_services/useLogin';
+import useLogin from '@/_services/auth/useLogin';
 import style from './loginModal.module.css';
 import { Icon } from '@/_components/icon/icon';
 
@@ -23,7 +23,8 @@ export default function LoginModal({open, onClose, onSwitchToregister}) {
         setEmail,
         setPassword,
         handleBackdropClick,
-        handleSubmit
+        handleSubmit,
+        loginWithGoogle
     } = useLogin({open, onClose, onSwitchToregister});
     
     
@@ -95,7 +96,7 @@ export default function LoginModal({open, onClose, onSwitchToregister}) {
                         <span className={style.dividerText}>o</span>
                         <span className={style.dividerLine}/>
                     </div>
-                    <button type='button' className={style.oauthButton}>
+                    <button type='button' onClick={loginWithGoogle} className={style.oauthButton}>
                         <GoogleIcon/>
                         Continuar con Google
                     </button>
@@ -103,7 +104,7 @@ export default function LoginModal({open, onClose, onSwitchToregister}) {
                 
                 <div className={style.footer}>
                     <span className={style.footerText}>¿No tienes cuenta?</span>
-                    <button className={style.footerLink}>Regístrate</button>
+                    <button className={style.footerLink} onClick={onSwitchToregister}>Regístrate</button>
                 </div>
             </div>
         </dialog>

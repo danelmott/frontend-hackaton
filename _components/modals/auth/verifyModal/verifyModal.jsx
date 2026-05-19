@@ -1,7 +1,7 @@
 'use client';
 import style from './verifyModal.module.css';
 import { Icon } from '@/_components/icon/icon';
-import useVerify from '@/_services/useVerify';
+import useVerify from '@/_services/auth/useVerify';
 
 
 export default function VerifyModal({open, onClose, email}) {

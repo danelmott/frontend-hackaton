@@ -1,7 +1,7 @@
 "use client";
 import styles from './sidebar.module.css'
 import ChatItem from './chatItem/chatItem';
-import useSidebar from '@/_services/useSidebar';
+import useSidebar from '@/_services/chat/useSidebar';
 
 export default function Sidebar() {
   const { chats, activeChat, handleCreateNewChat } = useSidebar();

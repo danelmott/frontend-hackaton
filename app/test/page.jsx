@@ -41,11 +41,11 @@ export default function TestAuthModalsPage() {
             
             {/* Renderizado condicional de las modales */}
             {activeModal === 'login' && (
-                <LoginModal open={true} onClose={closeModal} />
+                <LoginModal open={true} onClose={closeModal} onSwitchToregister={() => setActiveModal('signup')} />
             )}
             
             {activeModal === 'signup' && (
-                <SignupModal open={true} onClose={closeModal} />
+                <SignupModal open={true} onClose={closeModal} onswitchToLogin={() => setActiveModal('login')} />
             )}
             
             {activeModal === 'verify' && (

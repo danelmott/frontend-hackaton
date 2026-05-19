@@ -1,11 +1,9 @@
 'use client';
 import { fetcher } from "@/_api/fetcher";
 import { useState, useRef, useEffect } from "react";
-import { useModal } from "@/_contexts/modalContext";
 import { toastApi } from "@/_contexts/toastContext";
 
-export default function useSignup({open, onClose, onSwitchToLogin}) {
-    const { openModal } = useModal();
+export default function useSignup({open, onClose}) {
     const dialogRef = useRef(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -36,45 +34,38 @@ export default function useSignup({open, onClose, onSwitchToLogin}) {
         return errors;
     }
     
-    async function handleSubmit(e) {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const currentErrors = validate();
-        
         if(Object.keys(currentErrors).length) {
             setErrors(currentErrors);
             return;
         }
         setLoading(true);
         try {
-            await fetcher('/register', {method: 'POST', body: JSON.parse({email: email, password: password})});
-            openModal('verify-modal', {email: email});
+            await fetcher('/register', {method: 'POST', body: JSON.stringify({email, password})})
+            openModal('verify-modal', {email});
         } 
         catch (error) {
-            switch(error.code) {
-                case 'VALIDATION_ERROR':
-                    toastApi.error('Error de validacion');
-                    break;
-                case 'USER_ALREADY_EXISTS':
-                    toastApi.error(error.message || 'El email ya se encuentra registrado');
-                    break;
-                case 'ERROR_REGITERING_USER':
-                    toastApi.error(error.message || 'Hubo un error al intentar registrar al usuario');
-                    break;
-                case 'SERVER_INTERNAL_ERROR':
-                    toastApi.error(error.message || 'Error interno del servidor');
-                    break;
-                case 'NETWORK_SERVER_ERROR':
-                    toastApi(error.message || 'No fue posible conectarse con el servidor');
-                    break;
+            if(error.code === 'VALIDATION_ERROR') {
+                toastApi.error('Hubo un error de validacion de datos');
             }
+            
+            toastApi.error(error.message);
         }
         finally {
             setLoading(false);
         }
     }
     
-    function handleBackdropClick(e) {
-        if(e.target === dialogRef.current) onClose?.();
+    //CERRRAR MODAL SI SE HACE CLICK EN EL BACKDROP
+    const handleBackdropClick = (e) => {
+        const clickedOnBackdrop = e.target.tagName === 'DIALOG';
+        if(clickedOnBackdrop) onClose?.()
+    }
+    
+    const loginWithGoogle = () => {
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
     }
     
     return {
@@ -90,6 +81,7 @@ export default function useSignup({open, onClose, onSwitchToLogin}) {
         setLoading,
         setErrors,
         handleSubmit,
-        handleBackdropClick
+        handleBackdropClick,
+        loginWithGoogle
     }
 }

@@ -98,7 +98,7 @@ export default function useVerify({email, open, onClose }) {
         focusDigitAt(lastFilledIndex);
     }
     
-    //CERRAR MODAL SI SE HACE CLICK EN LA EL BACKDROP
+    //CERRAR MODAL SI SE HACE CLICK EN EL BACKDROP
     const handleBackdropClick = (e) => {
         const clickedOnBackdrop = e.target.tagName === 'DIALOG';
         if(clickedOnBackdrop) onClose?.();

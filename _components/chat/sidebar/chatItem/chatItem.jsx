@@ -2,7 +2,7 @@
 import style from './chatItem.module.css';
 import { Icon } from '@/_components/icon/icon';
 import ChatMenu from '../chatMenu/chatMenu';
-import useChatItem from '@/_services/useChatItem';
+import useChatItem from '@/_services/chat/useChatItem';
 
 export default function ChatItem({chat, active}) {
     const {menuOpen, setMenuOpen, handleAction} = useChatItem(chat);

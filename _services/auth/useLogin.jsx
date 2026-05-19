@@ -2,7 +2,7 @@
 import { fetcher } from "@/_api/fetcher";
 import { toastApi } from "@/_contexts/toastContext";
 import { useEffect, useRef, useState } from "react";
-import { useModal } from "@/_contexts/modalContext";
+
 
 export default function useLogin({open, onClose, onSwitchToRegister}) {
     const dialogRef = useRef(null);
@@ -10,7 +10,6 @@ export default function useLogin({open, onClose, onSwitchToRegister}) {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
-    const { openModal } = useModal();
     
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -31,51 +30,40 @@ export default function useLogin({open, onClose, onSwitchToRegister}) {
         return errors;
     }
     
-    async function handleSubmit(e) {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
         const currentErrors = validate();
         if(Object.keys(currentErrors).length) {
             setErrors(currentErrors);
             return;
         }
-        
         setLoading(true);
+        
         try {
-            await fetcher('/login', 
-                {method: 'POST', body: JSON.stringify({
-                    email: email,
-                    password: password
-                })});
-                openModal('');
+            await fetcher('/login', {method: 'POST', body: JSON.stringify({email, password})})
+            onClose?.()
         } 
         catch (error) {
-            toastApi.error(error.message)
-            
-            switch(error.code) {
-                case 'INVALID_CREDENTIALS':
-                    toastApi.error(error.message || 'Credenciales invalidas!, vuelve a intentarlo');
-                    break;
-                case 'EMAIL_NOT_VERIFIED':
-                    toastApi.error(error.message || 'Correo no verificado');
-                    openModal('verify_email', {email: email});
-                    break;
-                case 'SERVER_INTERNAL_ERROR':
-                    toastApi.error(error.message || 'Error interno del servidor');
-                    break;
-                case 'NETWORK_SERVER_ERROR':
-                    toastApi.error(error.message || 'No fue posible conectarse con el servidor');
-                    break;
+            if(error.code === 'INVALID_CREDENTIALS') {
+                toastApi.error('Hubo un error de validacion de datos');
             }
+            
+            toastApi.error(error.message);
         }
         finally {
             setLoading(false);
         }
     }
     
-    function handleBackdropClick(e) {
-        if(e.target === dialogRef.current) onClose?.()
+    const handleBackdropClick = (e) => {
+        const clickedOnBackdrop = e.target.tagName === 'DIALOG';
+        if(clickedOnBackdrop) onClose?.();
     }
+    
+    const loginWithGoogle = () => {
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+    }
+    
     
     return {
         dialogRef,
@@ -86,6 +74,7 @@ export default function useLogin({open, onClose, onSwitchToRegister}) {
         errors,
         loading,
         handleSubmit,
-        handleBackdropClick
+        handleBackdropClick,
+        loginWithGoogle
     };
 }

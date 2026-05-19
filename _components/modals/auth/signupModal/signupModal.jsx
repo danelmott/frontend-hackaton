@@ -1,5 +1,5 @@
 'use client';
-import useSignup from '@/_services/useSignup';
+import useSignup from '@/_services/auth/useSignup';
 import style from './signupModal.module.css';
 import { Icon } from '@/_components/icon/icon';
 import { GoogleIcon } from '../loginModal/loginModal';
@@ -18,7 +18,8 @@ export default function SignupModal({open, onClose, onswitchToLogin}) {
         setLoading,
         setPassword,
         handleBackdropClick,
-        handleSubmit
+        handleSubmit,
+        loginWithGoogle
     } = useSignup({open, onClose, onswitchToLogin});
     
     return (
@@ -38,7 +39,7 @@ export default function SignupModal({open, onClose, onswitchToLogin}) {
                     <p className={style.subtitle}>Únete gratis a aguilarIA</p>
                 </div>
                 
-                <form className={style.body} onSubmit={handleSubmit} noValidate>
+                <form className={style.body} onSubmit={handleSubmit}>
                     <div className={style.field}>
                         <label htmlFor="signup-email" className={style.label}>Correo</label>
                         <input
@@ -81,14 +82,14 @@ export default function SignupModal({open, onClose, onswitchToLogin}) {
                         <span className={style.dividerLine}/>
                     </div>
                     
-                    <button className={style.oauthBtn} type='button'>
+                    <button className={style.oauthBtn} onClick={loginWithGoogle} type='button'>
                         <GoogleIcon/>
                         Registrarse con Google
                     </button>
                 </form>
                 <div className={style.footer}>
                     <span className={style.footerText}>¿Ya tienes cuenta?</span>
-                    <button className={style.footerLink}>Inicia Session</button>
+                    <button className={style.footerLink} onClick={onswitchToLogin}>Inicia Session</button>
                 </div>
             </div>
         </dialog>

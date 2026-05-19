@@ -24,13 +24,13 @@ export default function ModalRoot() {
             />
             <LoginModal 
                 open={modal.type === 'login'}
-                onCLose={closeModal}
+                onClose={closeModal}
                 onSwitchToregister={() => console.log("switch to signup")}
             />
             
             <SignupModal
                 open={modal.type === 'signup'}
-                onCLose={closeModal}
+                onClose={closeModal}
                 onswitchToLogin={() => console.log("switch to login")}
             />
         </>
