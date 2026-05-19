@@ -4,7 +4,7 @@ import { toastApi } from "@/_contexts/toastContext";
 import { useEffect, useRef, useState } from "react";
 import { useModal } from "@/_contexts/modalContext";
 
-export default function useLogin({open, onCLose, onSwitchToRegister}) {
+export default function useLogin({open, onClose, onSwitchToRegister}) {
     const dialogRef = useRef(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -74,7 +74,7 @@ export default function useLogin({open, onCLose, onSwitchToRegister}) {
     }
     
     function handleBackdropClick(e) {
-        if(e.target === dialogRef.current) onCLose?.()
+        if(e.target === dialogRef.current) onClose?.()
     }
     
     return {

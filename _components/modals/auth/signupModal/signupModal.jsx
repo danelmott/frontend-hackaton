@@ -19,7 +19,7 @@ export default function SignupModal({open, onClose, onswitchToLogin}) {
         setPassword,
         handleBackdropClick,
         handleSubmit
-    } = useSignup(open, onClose, onswitchToLogin);
+    } = useSignup({open, onClose, onswitchToLogin});
     
     return (
         <dialog
@@ -29,7 +29,7 @@ export default function SignupModal({open, onClose, onswitchToLogin}) {
             onClick={handleBackdropClick}
         >
             <div className={style.dialogWrapper}>
-                <button className={style.closeBtn} onClick={onClose} aria-label='Cerrar modal'>
+                <button className={style.closeButton} onClick={onClose} aria-label='Cerrar modal'>
                     <Icon name='close' size='lg'/>
                 </button>
                 <div className={style.header}>
@@ -71,7 +71,7 @@ export default function SignupModal({open, onClose, onswitchToLogin}) {
                         />
                     </div>
                     
-                    <button className={style.submit} type='submit' disabled={loading}>
+                    <button className={style.submitBtn} type='submit' disabled={loading}>
                         {loading ? 'Creando cuenta...': 'Registrarse'}
                     </button>
                     
@@ -88,7 +88,7 @@ export default function SignupModal({open, onClose, onswitchToLogin}) {
                 </form>
                 <div className={style.footer}>
                     <span className={style.footerText}>¿Ya tienes cuenta?</span>
-                    <button className={style.footerSwitch}>Inicia Session</button>
+                    <button className={style.footerLink}>Inicia Session</button>
                 </div>
             </div>
         </dialog>
