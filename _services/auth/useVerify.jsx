@@ -108,7 +108,7 @@ export default function useVerify({email, open, onClose }) {
         const code = digits.join('');
         setLoading(true);
         try {
-            await fetcher('/verify-account', {
+            await fetcher('/auth/verify-account', {
                 method: 'POST',
                 body: JSON.stringify({email, code})
             });
@@ -134,7 +134,7 @@ export default function useVerify({email, open, onClose }) {
         setTimeout(() => {focusDigitAt(0), 50});
         
         try {
-            await fetcher('/resend-verification', {
+            await fetcher('/auth/resend-verification', {
                 method: 'POST',
                 body: JSON.stringify({email})
             });

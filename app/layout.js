@@ -5,6 +5,7 @@ import { ToastProvider } from "@/_contexts/toastContext";
 import { Toaster } from "@/_components/toaster/toaster";
 import { ModalProvider } from "@/_contexts/modalContext";
 import  ModalRoot  from "@/_components/modals/modalRoot/modalRoot";
+import { AuthProvider } from "@/_contexts/authContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,13 +21,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable}` }>
       <body>
-        <ModalProvider>
-          <ToastProvider>
-            <Toaster position="top-right"/>
-            <ModalRoot/>
-            {children}
-          </ToastProvider>
-        </ModalProvider>
+        <AuthProvider>
+          <ModalProvider>
+            <ToastProvider>
+              <Toaster position="top-right"/>
+              <ModalRoot/>
+              {children}
+            </ToastProvider>
+          </ModalProvider>
+        </AuthProvider>
       </body>
     </html>
   );

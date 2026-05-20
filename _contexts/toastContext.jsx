@@ -5,21 +5,20 @@ const ToastContext = createContext(null);
 
 let externalDispatch = null;
 
-export function ToastProvider({children}) {
+export function ToastProvider({ children }) {
     const [toasts, setToasts] = useState([]);
     const timers = useRef({});
     
-    const dimiss = useCallback((id) => {
-        setToast((prev) =>
-            prev.map((t) => (t.id === id) ? {...t, removing: true}: t)
+    const dismiss = useCallback((id) => {
+        setToasts((prev) =>
+            prev.map((t) => (t.id === id ? { ...t, removing: true } : t))
         );
         clearTimeout(timers.current[id]);
         setTimeout(() => {
             setToasts((prev) => prev.filter((t) => t.id !== id));
-            delete timers.current[id]
-        }, 350)
+            delete timers.current[id];
+        }, 300);
     }, []);
-    
     
     const toast = useCallback(
         (message, options = {}) => {
@@ -27,42 +26,38 @@ export function ToastProvider({children}) {
             const duration = options.duration ?? 4000;
             
             setToasts((prev) => {
-                const next = [{id, message, removing: false, ...options}, ...prev];
+                const next = [{ id, message, removing: false, ...options }, ...prev];
                 return next.slice(0, 5);
-            })
+            });
             
-            if(duration !== Infinity) {
-                timers.current[id] = setTimeout(() => dimiss(id), duration);
+            if (duration !== Infinity) {
+                timers.current[id] = setTimeout(() => dismiss(id), duration);
             }
             
             return id;
         },
-        [dimiss]
+        [dismiss]
     );
     
     externalDispatch = toast;
     
-    return(
-        <ToastContext.Provider value={{toasts, toast, dimiss}}>
+    return (
+        <ToastContext.Provider value={{ toasts, toast, dismiss }}>
             {children}
         </ToastContext.Provider>
-    )
+    );
 }
-
 
 export function useToast() {
     const context = useContext(ToastContext);
-    if(!context) throw new Error("useToast debe ser usado dentro de <ToastProvider>");
-    
+    if (!context) throw new Error("useToast debe usarse dentro de <ToastProvider>");
     return context;
 }
 
-export const toastApi =  {
-    show: (msg, opts) => externalDispatch?.(msg, opts),
-    success: (msg, opts) => externalDispatch?.(msg, {type: 'success', ...opts}),
-    error: (msg, opts) => externalDispatch?.(msg, {type: 'error', ...opts}),
-    warning: (msg, opts) => externalDispatch?.(msg, {type: 'warning', ...opts}),
-    info: (msg, opts) => externalDispatch?.(msg, {type: 'info', ...opts}),
-    loading: (msg, opts) =>
-        externalDispatch?.(msg, {type: 'loading', duration: Infinity, ...opts})
-}
+export const toastApi = {
+    show:    (msg, opts) => externalDispatch?.(msg, opts),
+    success: (msg, opts) => externalDispatch?.(msg, { type: 'success', ...opts }),
+    error:   (msg, opts) => externalDispatch?.(msg, { type: 'error',   ...opts }),
+    warning: (msg, opts) => externalDispatch?.(msg, { type: 'warning', ...opts }),
+    info:    (msg, opts) => externalDispatch?.(msg, { type: 'info',    ...opts }),
+};

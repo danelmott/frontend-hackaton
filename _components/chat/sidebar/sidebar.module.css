@@ -5,6 +5,7 @@
   flex-direction: column;
   background: #fafafa;
   border-right: 1px solid #ebebeb;
+  font-family: var(--font-inter);
 }
 
 /* ── Header ─────────────────────────────────────── */

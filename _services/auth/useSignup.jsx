@@ -25,11 +25,16 @@ export default function useSignup({open, onClose}) {
     const validate = () => {
         const errors = {};
         if(!email) errors.email = 'El correo es requerido';
-        else if (!/\S+@\.\S+/.test(email)) errors.email = 'Correo invalido';
+        else if(!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) errors.email = 'Correo inválido';
+        
         if(!password) errors.password = 'La contraseña es requerida';
-        else if(!password.length < 8) errors.password = 'Minimo 8 caracteres';
-        if(confirmPassword) errors.confirm = 'Confirma tu contraseña';
-        else if(confirmPassword !== password) errors.confirm = 'Las contraseñas no coinciden';
+        else if(password.length < 8) errors.password = 'Mínimo 8 caracteres';
+        else if (!/[a-zA-Z]/.test(password)) errors.password = 'Debe contener al menos una letra';
+        else if (!/[0-9]/.test(password)) errors.password = 'Debe contener al menos un número';
+        else if (!/[^a-zA-Z0-9]/.test(password)) errors.password = 'Debe contener al menos un carácter especial';
+        
+        if(!confirmPassword) errors.confirmPassword = 'Confirma tu contraseña';
+        else if(confirmPassword !== password) errors.confirmPassword = 'Las contraseñas no coinciden';
         
         return errors;
     }
@@ -43,7 +48,7 @@ export default function useSignup({open, onClose}) {
         }
         setLoading(true);
         try {
-            await fetcher('/register', {method: 'POST', body: JSON.stringify({email, password})})
+            await fetcher('/auth/register', {method: 'POST', body: JSON.stringify({email, password})})
             openModal('verify-modal', {email});
         } 
         catch (error) {

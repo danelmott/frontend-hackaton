@@ -6,32 +6,36 @@ import LoginModal from "../auth/loginModal/loginModal";
 import SignupModal from "../auth/signupModal/signupModal";
 
 export default function ModalRoot() {
-    const {modal, closeModal} = useModal();
+    const {modal, closeModal, openModal} = useModal();
+    const UPDATE_CHAT_MODAL = 'update_chat';
+    const DELETE_CHAT_MODAL = 'delete_chat';
+    const LOGIN_MODAL = 'login';
+    const SIGNUP_MODAL = 'signup';
     
     return (
         <>
             <UpdateChatModal
-                open={modal.type === 'update_chat'}
+                open={modal.type === UPDATE_CHAT_MODAL}
                 onClose={closeModal}
                 currentName={modal?.data?.currentName}
                 onConfirm={modal?.data?.onConfirm}
             />
             <DeleteChatModal
-                open={modal.type === 'delete_chat'}
+                open={modal.type === DELETE_CHAT_MODAL}
                 onClose={closeModal}
                 chatName={modal?.data?.chatName}
                 onConfirm={modal?.data?.onConfirm}
             />
             <LoginModal 
-                open={modal.type === 'login'}
+                open={modal.type === LOGIN_MODAL}
                 onClose={closeModal}
-                onSwitchToregister={() => console.log("switch to signup")}
+                onSwitchToregister={() => openModal(SIGNUP_MODAL)}
             />
             
             <SignupModal
-                open={modal.type === 'signup'}
+                open={modal.type === SIGNUP_MODAL}
                 onClose={closeModal}
-                onswitchToLogin={() => console.log("switch to login")}
+                onswitchToLogin={() => openModal(LOGIN_MODAL)}
             />
         </>
     )

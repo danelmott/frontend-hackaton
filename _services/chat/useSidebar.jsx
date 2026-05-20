@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from "react";
-import { toastApi} from "@/_contexts/toastContext";
+import { toastApi, useToast } from "@/_contexts/toastContext";
 import { fetcher } from "@/_api/fetcher";
 import { useDebounce } from "@/_hooks/useDebounce";
 
@@ -51,7 +51,7 @@ export default function useSidebar() {
         handleSearchChat(debouncedSearchQuery);
     }, [debouncedSearchQuery, handleSearchChat]);
     
-    useEffect(async () => {
+    useEffect(() => {
         async function getChats() {
             try {
                 const data = await fetcher('/chats', {method: 'GET'});
@@ -72,7 +72,7 @@ export default function useSidebar() {
             }
         }
         
-        await getChats();
+        getChats();
     }, []); 
     
     return {
