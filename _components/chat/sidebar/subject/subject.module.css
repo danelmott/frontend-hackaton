@@ -1,0 +1,54 @@
+.subjectItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    margin: 1px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    color: #4a4a4a;
+}
+
+.subjectIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+}
+
+.subjectIcon span {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    will-change: transform;
+    backface-visibility: hidden; 
+}
+
+
+.subjectTitle {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+@media(hover: hover) {
+    .subjectItem:hover {
+        background-color: #f0f0f0;
+        color: #0a0a0a;
+    }
+    
+    .subjectItem:hover .subjectIcon span {
+        transform: scale(1.08) rotate(5deg); /* Quitamos la rotación para evitar el temblor en las líneas rectas del ícono */
+    }
+}
+
+/* dark mode */
+@media (prefers-color-scheme: dark) {
+    .subjectItem { color: #a0a0a0; }
+    
+    @media(hover: hover) {
+        .subjectItem:hover { 
+            background: #1a1a1a; 
+            color: #f0f0f0;
+        }
+    }
+}

@@ -7,8 +7,16 @@ import useChatItem from '@/_services/chat/useChatItem';
 export default function ChatItem({chat, active}) {
     const {menuOpen, setMenuOpen, handleAction} = useChatItem(chat);
     
+    // Asumimos que la prop puede llamarse isStarred, starred o pinned
+    const isDestacado = chat.isStarred || chat.starred || chat.pinned;
+    
     return (
         <div className={`${style.chatItem} ${active ? style.active : ''}`}>
+            {isDestacado && (
+                <span className={style.starIcon} aria-label="Chat destacado">
+                    <Icon name='star' size='sm' filled />
+                </span>
+            )}
             <span className={style.chatTitle}>{chat.title}</span>
             <div className={style.menuWrapper}>
                 <button
@@ -19,7 +27,7 @@ export default function ChatItem({chat, active}) {
                     }}
                     aria-label='Opciones'
                 >
-                    <Icon name='more_vert' size='lg'/>
+                    <Icon name='more_vert' size='sm'/>
                 </button>
                 <ChatMenu 
                     open={menuOpen}

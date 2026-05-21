@@ -4,10 +4,10 @@ import style from "./chatMenu.module.css";
 import { Icon } from "@/_components/icon/icon";
 
 const MENU_ITEMS = [
-    { id: "highlight_chat", label: "Destacar", icon: "star"              },
-    { id: "update_chat",    label: "Renombrar",icon: "edit"              },
-    { id: "archive_chat",   label: "Archivar", icon: "create_new_folder" },
-    { id: "delete_chat",    label: "Eliminar", icon: "delete", danger: true },
+    { id: "highlight_chat", label: "Destacar", icon: "star"              , filled: true},
+    { id: "update_chat",    label: "Renombrar",icon: "edit"              , filled: false},
+    { id: "archive_chat",   label: "Archivar", icon: "create_new_folder" , filled: false, },
+    { id: "delete_chat",    label: "Eliminar", icon: "delete", danger: true , filled: false},
 ];
 
 export default function ChatMenu({ open, onClose, onAction }) {
@@ -44,7 +44,7 @@ export default function ChatMenu({ open, onClose, onAction }) {
                             onClose?.();
                         }}
                     >
-                        <Icon name={item.icon} size="md" />
+                        <Icon name={item.icon} size="md" filled={item.filled} />
                         <span>{item.label}</span>
                     </button>
                 );

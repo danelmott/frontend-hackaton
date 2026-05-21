@@ -1,11 +1,50 @@
 .sidebar {
-  width: 260px;
+  width: 280px; /* Un poco más ancho y estético */
   height: 100vh;
-  display: flex;
-  flex-direction: column;
   background: #fafafa;
   border-right: 1px solid #ebebeb;
   font-family: var(--font-inter);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.sidebar.collapsed {
+  width: 0;
+  border-right: none;
+  opacity: 0;
+}
+
+.sidebarInner {
+  width: 280px; /* Bloquea el ancho para que no se deforme al encogerse */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Botón Flotante para Abrir ───────────────────── */
+.openToggle {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 50;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #717171;
+  transition: background 0.15s, color 0.15s;
+}
+
+.openToggle:hover {
+  background: #ebebeb;
+  color: #0a0a0a;
 }
 
 /* ── Header ─────────────────────────────────────── */
@@ -19,8 +58,14 @@
   min-height: 52px;
 }
 
-.logo {
-  font-size: 14px;
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoText {
+  font-size: 15px;
   font-weight: 600;
   color: #0a0a0a;
   letter-spacing: -0.02em;
@@ -49,6 +94,36 @@
   background: #f0f0f0;
   color: #0a0a0a;
 }
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 8px 0 8px;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #1a1a1a;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.actionButton:hover {
+  background: #ebebeb;
+}
+
 
 /* ── Search bar ──────────────────────────────────── */
 .searchBar {
@@ -124,7 +199,7 @@
 }
 
 .section {
-  margin-bottom: 4px;
+  margin-bottom: 12px;
 }
 
 .sectionLabel {
@@ -134,7 +209,37 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #b0b0b0;
-  padding: 8px 8px 4px;
+  padding: 8px 8px 6px;
+}
+
+/* ── Asignaturas ─────────────────────────────────── */
+.subjectItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  margin: 1px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+  color: #4a4a4a;
+}
+
+.subjectItem:hover {
+  background: #f0f0f0;
+  color: #0a0a0a;
+}
+
+.subjectIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.subjectTitle {
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /* ── Chat item ───────────────────────────────────── */
@@ -382,6 +487,57 @@
   text-overflow: ellipsis;
 }
 
+/* ── Feedback ────────────────────────────────────── */
+.feedbackContainer {
+  padding: 0 8px 10px; /* Igualado a 8px a los lados como el contenedor de acciones */
+}
+
+.feedbackButton {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Igualado a actionButton (10px en vez de 8px) */
+  justify-content: flex-start;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #1a1a1a; /* Igualado a actionButton (#1a1a1a en vez de #717171) */
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  text-decoration: none; /* Asegura que el enlace no tenga subrayado */
+}
+
+.feedbackButton:hover {
+  background: #ebebeb; /* Igualado a actionButton */
+}
+
+/* Cambiamos 'svg' por 'span:first-child' ya que Icon usa span */
+.feedbackButton span:first-child {
+  color: #fdfdfd; /* Color amigable para el bombillo/feedback */
+  display: inline-block;
+  transition: transform 0.2s ease;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.feedbackButton:hover span:first-child {
+  transform: scale(1.1) rotate(6deg);
+}
+
+.actionButton > span {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  will-change: transform; /* Evita temblores de renderizado */
+}
+
+.actionButton:hover > span {
+  transform: scale(1.08) rotate(5deg); /* Escala más tenue y limpia, sin rotación */
+}
+
 /* ── Dark mode ───────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   .sidebar {
@@ -393,8 +549,8 @@
     border-bottom-color: #222;
   }
 
-  .logo {
-    color: #f0f0f0;
+  .logoText {
+    color: #ffffff;
   }
 
   .iconBtn {
@@ -404,6 +560,14 @@
   .iconBtn:hover {
     background: #1e1e1e;
     color: #f0f0f0;
+  }
+
+  .actionButton {
+    color: #d0d0d0;
+  }
+
+  .actionButton:hover {
+    background: #222;
   }
 
   .searchBar {
@@ -420,6 +584,15 @@
 
   .sectionLabel {
     color: #444;
+  }
+
+  .subjectItem {
+    color: #a0a0a0;
+  }
+
+  .subjectItem:hover {
+    background: #1a1a1a;
+    color: #f0f0f0;
   }
 
   .chatItem:hover {
@@ -492,8 +665,25 @@
     caret-color: #f0f0f0;
   }
 
+  .feedbackButton {
+    color: #d0d0d0; /* Igualado a actionButton en Dark Mode */
+  }
+
+  .feedbackButton:hover {
+    background: #222; /* Igualado a actionButton en Dark Mode */
+  }
+
   .userSection {
     border-top-color: #222;
+  }
+
+  .openToggle {
+    color: #a0a0a0;
+  }
+
+  .openToggle:hover {
+    background: #1e1e1e;
+    color: #f0f0f0;
   }
 
   .userAvatar {
