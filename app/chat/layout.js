@@ -1,19 +1,36 @@
-import Sidebar from "@/_components/chat/sidebar/sidebar"
-// El JSON de prueba que te pasé
-const DATA_PRUEBA = [
-    { id: "1", title: "Configuración de Next.js y CSS Modules" },
-    { id: "2", title: "Refactorización de AguilarIA" },
-    { id: "3", title: "Optimización de consultas SQL en Prisma" },
-    { id: "4", title: "Análisis de componentes para Perfumería Cat" },
-    { id: "5", title: "Título largo para probar el truncado del texto" }
-];
+"use client";
 
-export default function chatLayout({children}) {
-    const chatActive = 1
+import { useState } from "react";
+import Sidebar from "@/_components/chat/sidebar/sidebar";
+import { Icon } from "@/_components/icon/icon";
+import Image from "next/image";
+import styles from "./layout.module.css";
+
+export default function ChatLayout({ children }) {
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
-        <div style={{display: 'flex'}}>
-            <Sidebar chats={DATA_PRUEBA} activeChatId={chatActive}/>
-            {children}
+        <div className={styles.layout}>
+            <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+
+            {isOpen && (
+                <div className={styles.overlay} onClick={() => setIsOpen(false)} />
+            )}
+
+            <div className={styles.main}>
+                <header className={styles.header}>
+                    <button
+                        className={styles.menuButton}
+                        onClick={() => setIsOpen(true)}
+                        aria-label="Abrir menú"
+                    >
+                        <Icon name="menu" size="md" />
+                    </button>
+ 
+                </header>
+
+                {children}
+            </div>
         </div>
-    )
+    );
 }

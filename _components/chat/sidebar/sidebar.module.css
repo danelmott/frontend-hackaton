@@ -1,19 +1,20 @@
 .sidebar {
-  width: 280px; /* Un poco más ancho y estético */
+  width: 280px;
   height: 100vh;
-  background: #fafafa;
-  border-right: 1px solid #ebebeb;
+  background: #111111;
+  border-right: 1px solid #222;
   font-family: var(--font-inter);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  flex-shrink: 0;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  transform: translateX(0);
 }
 
 .sidebar.collapsed {
-  width: 0;
-  border-right: none;
-  opacity: 0;
+  transform: translateX(-100%);
 }
 
 .sidebarInner {

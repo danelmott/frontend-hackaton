@@ -8,9 +8,9 @@ import Image from 'next/image';
 import UserSection from './UserSection/userSection';
 import Subject from './subject/subject';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }) {
   const { chats, activeChat, handleCreateNewChat } = useSidebar();
-  const [isOpen, setIsOpen] = useState(true);
+
   
   // Datos de prueba (Mocks) para visualizar los chats normales y fijados en caso de que no haya chats aún
   const demoChats = [
@@ -42,28 +42,20 @@ export default function Sidebar() {
 
   return (
     <>
-      {!isOpen && (
-        <button
-          className={styles.openToggle}
-          onClick={() => setIsOpen(true)}
-          aria-label="Abrir panel lateral"
-        >
-          <Icon name="left_panel_open" size="md" />
-        </button>
-      )}
+
       
       <aside className={`${styles.sidebar} ${isOpen ? '' : styles.collapsed}`}>
         <div className={styles.sidebarInner}>
           <div className={styles.header}>
             <div className={styles.logoWrapper}>
               <Image 
-                src="/logo-aguilaria-1.png" 
-                alt="aguilarIA" 
+                src="/logo_principal1.png" 
+                alt="Serfi IA" 
                 width={28} 
                 height={28} 
                 className={styles.logoDark}
               />
-              <span className={styles.logoText}>aguilarIA</span>
+              <span className={styles.logoText}>Serfi IA</span>
             </div>
             <div className={styles.headerActions}>
               <button 
