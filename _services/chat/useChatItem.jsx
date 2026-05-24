@@ -1,12 +1,14 @@
 'use client';
 import { useState } from "react";
 import { useModal } from "@/_contexts/modalContext";
+import { useChat } from "@/_contexts/chatContext";
 import { fetcher } from "@/_api/fetcher";
 import { toastApi } from "@/_contexts/toastContext";
 
 export default function useChatItem(chat) {
     const [menuOpen, setMenuOpen] = useState(false);
     const { openModal } = useModal();
+    const { removeChat, updateChatInList } = useChat();
     
     const handleAction = async (actionId) => {
         switch(actionId) {
@@ -45,6 +47,7 @@ export default function useChatItem(chat) {
                 body: JSON.stringify({title: newName})
             });
             
+            updateChatInList(data);
             return data;
         } 
         catch (error) {
@@ -71,6 +74,7 @@ export default function useChatItem(chat) {
                 method: 'DELETE'
             });
             
+            removeChat(chatId);
             return data;
         } 
         catch (error) {

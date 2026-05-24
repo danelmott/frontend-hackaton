@@ -1,10 +1,12 @@
 'use client';
 import { fetcher } from "@/_api/fetcher";
 import { toastApi } from "@/_contexts/toastContext";
+import { useAuth } from "@/_contexts/authContext";
 import { useEffect, useRef, useState } from "react";
 
 
 export default function useLogin({open, onClose, onSwitchToRegister}) {
+    const { refreshUser } = useAuth();
     const dialogRef = useRef(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -13,13 +15,14 @@ export default function useLogin({open, onClose, onSwitchToRegister}) {
     
     useEffect(() => {
         const dialog = dialogRef.current;
-        if(!dialog) return;
-        if(open) {
-            dialog.showModal();
+        if (!dialog) return;
+
+        if (open) {
+            if (!dialog.open) dialog.showModal();
+            return;
         }
-        else {
-            dialog.close()
-        }
+
+        if (dialog.open) dialog.close();
     }, [open]);
     
     const validate = () => {
@@ -40,7 +43,8 @@ export default function useLogin({open, onClose, onSwitchToRegister}) {
         setLoading(true);
         
         try {
-            await fetcher('/login', {method: 'POST', body: JSON.stringify({email, password})})
+            await fetcher('/auth/login', {method: 'POST', body: JSON.stringify({email, password})})
+            await refreshUser();
             onClose?.()
         } 
         catch (error) {

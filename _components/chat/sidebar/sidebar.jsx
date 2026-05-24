@@ -1,49 +1,44 @@
 "use client";
-import { useState } from 'react';
 import styles from './sidebar.module.css'
 import ChatItem from './chatItem/chatItem';
-import useSidebar from '@/_services/chat/useSidebar';
+import { useChat } from '@/_contexts/chatContext';
+import { useAuth } from '@/_contexts/authContext';
 import { Icon } from '@/_components/icon/icon';
 import Image from 'next/image';
 import UserSection from './UserSection/userSection';
 import Subject from './subject/subject';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
-  const { chats, activeChat, handleCreateNewChat } = useSidebar();
+  const {
+    chats,
+    activeChat,
+    isLoadingChats,
+    handleSelectChat,
+    handleCreateNewChat,
+  } = useChat();
+  const { user } = useAuth();
 
-  
-  // Datos de prueba (Mocks) para visualizar los chats normales y fijados en caso de que no haya chats aún
-  const demoChats = [
-    { id: 'c1', title: 'Apuntes de Álgebra y Geometría', pinned: true },
-    { id: 'c2', title: 'Explicación de recursividad', pinned: true },
-    { id: 'c3', title: 'Ideas para proyecto de Next.js', pinned: false },
-    { id: 'c4', title: 'Resumen del capítulo 4', pinned: false },
-    { id: 'c5', title: 'Preparación para parcial de Física', pinned: false },
-  ];
-  
-  // Usamos los chats reales o los de prueba si está vacío
-  const displayChats = chats && chats.length > 0 ? chats : demoChats;
-  
-  // Filtramos fijados y recientes
-  const pinnedChats = displayChats.filter((c) => c.pinned);
-  const recentChats = displayChats.filter((c) => !c.pinned);
-  
-  // Mock de Asignaturas/Espacios
   const demoSubjects = [
     { id: 's1', title: 'Álgebra Lineal' },
     { id: 's2', title: 'Desarrollo Web' },
   ];
-  
-  const user = {
-    name: 'luis turriago',
-    email: 'danel@gmail.com',
-    src: ''
-  }
+
+  const displayUser = user
+    ? {
+        name: user.email?.split('@')[0] ?? 'Usuario',
+        email: user.email,
+        src: '',
+      }
+    : {
+        name: 'Invitado',
+        email: 'Inicia sesión',
+        src: '',
+      };
+
+  const recentChats = chats;
 
   return (
     <>
-
-      
       <aside className={`${styles.sidebar} ${isOpen ? '' : styles.collapsed}`}>
         <div className={styles.sidebarInner}>
           <div className={styles.header}>
@@ -69,7 +64,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           </div>
           
           <div className={styles.actions}>
-            <button className={styles.actionButton}>
+            <button
+              className={styles.actionButton}
+              onClick={handleCreateNewChat}
+              disabled={!user}
+            >
               <Icon name='add' size='md'/>
               Crear Chat
             </button>
@@ -80,16 +79,14 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           </div>
           
           <nav className={styles.chatList}>
-            {pinnedChats.length > 0 && (
-              <div className={styles.section}>
-                <span className={styles.sectionLabel}>Fijados</span>
-                {pinnedChats.map((chat) => (
-                  <ChatItem key={chat.id} chat={chat} />
-                ))}
-              </div>
+            {isLoadingChats && (
+              <p className={styles.sectionLabel}>Cargando chats...</p>
             )}
-            
-            {/* Sección de Asignaturas (Mock) */}
+
+            {!isLoadingChats && recentChats.length === 0 && user && (
+              <p className={styles.sectionLabel}>No tienes chats aún</p>
+            )}
+
             {demoSubjects.length > 0 && (
               <div className={styles.section}>
                 <span className={styles.sectionLabel}>Asignaturas</span>
@@ -103,13 +100,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               <div className={styles.section}>
                 <span className={styles.sectionLabel}>Recientes</span>
                 {recentChats.map((chat) => (
-                  <ChatItem key={chat.id} chat={chat} />
+                  <ChatItem
+                    key={chat.id}
+                    chat={chat}
+                    active={activeChat?.id === chat.id}
+                    onSelect={() => handleSelectChat(chat)}
+                  />
                 ))}
               </div>
             )}
           </nav>
           
-          {/* Botón de Feedback */}
           <div className={styles.feedbackContainer}>
             <a href="/feedback" className={styles.feedbackButton}>
               <Icon name="lightbulb" size="sm" />
@@ -117,7 +118,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             </a>
           </div>
           
-          <UserSection user={user}/>
+          <UserSection user={displayUser}/>
         </div>
       </aside>
     </>

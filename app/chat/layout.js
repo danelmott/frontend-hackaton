@@ -1,13 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sidebar from "@/_components/chat/sidebar/sidebar";
 import { Icon } from "@/_components/icon/icon";
-import Image from "next/image";
 import styles from "./layout.module.css";
+import { ChatProvider } from "@/_contexts/chatContext";
+import { useAuth } from "@/_contexts/authContext";
+import { useModal } from "@/_contexts/modalContext";
 
-export default function ChatLayout({ children }) {
+function ChatLayoutContent({ children }) {
     const [isOpen, setIsOpen] = useState(false);
+    const { user, loading } = useAuth();
+    const { modal, openModal } = useModal();
+    const hasPromptedLogin = useRef(false);
+
+    useEffect(() => {
+        if (loading) return;
+
+        if (user) {
+            hasPromptedLogin.current = false;
+            return;
+        }
+
+        if (hasPromptedLogin.current || modal.type === 'login') return;
+
+        hasPromptedLogin.current = true;
+        openModal('login');
+    }, [loading, user, modal.type, openModal]);
 
     return (
         <div className={styles.layout}>
@@ -32,5 +51,13 @@ export default function ChatLayout({ children }) {
                 {children}
             </div>
         </div>
+    );
+}
+
+export default function ChatLayout({ children }) {
+    return (
+        <ChatProvider>
+            <ChatLayoutContent>{children}</ChatLayoutContent>
+        </ChatProvider>
     );
 }
