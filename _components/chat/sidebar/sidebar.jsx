@@ -35,7 +35,7 @@ export default function Sidebar() {
   ];
   
   const user = {
-    name: 'gabriel cervantes',
+    name: 'luis turriago',
     email: 'danel@gmail.com',
     src: ''
   }

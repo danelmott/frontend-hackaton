@@ -17,7 +17,14 @@ export default function MessageContainer({ messages = [] }) {
         <div className={style.container} ref={containerRef}>
             <div className={style.messagesWrapper}>
                 {messages.length === 0 ? (
-                    <div className={style.empty}>Envía un mensaje para comenzar</div>
+                    <div className={style.empty}>
+                        <h1 className={style.welcomeTitle}>
+                                ¿Qué deseas <span className={style.highlight}>aprender</span> hoy?
+                        </h1>
+                        <p className={style.welcomeSubtitle}>
+                        Tu asistente académico inteligente para investigación y estudio profundo.
+                        </p>
+                    </div>
                 ) : (
                     messages.map((msg, index) => (
                         <div 
