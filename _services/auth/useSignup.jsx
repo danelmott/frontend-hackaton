@@ -2,8 +2,10 @@
 import { fetcher } from "@/_api/fetcher";
 import { useState, useRef, useEffect } from "react";
 import { toastApi } from "@/_contexts/toastContext";
+import { useModal } from "@/_contexts/modalContext";
 
 export default function useSignup({open, onClose}) {
+    const { openModal, closeModal } = useModal();
     const dialogRef = useRef(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -49,7 +51,8 @@ export default function useSignup({open, onClose}) {
         setLoading(true);
         try {
             await fetcher('/auth/register', {method: 'POST', body: JSON.stringify({email, password})})
-            openModal('verify-modal', {email});
+            closeModal();
+            openModal('verify-modal', { email });
         } 
         catch (error) {
             if(error.code === 'VALIDATION_ERROR') {

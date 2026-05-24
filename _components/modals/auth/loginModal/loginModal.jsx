@@ -32,7 +32,6 @@ export default function LoginModal({open, onClose, onSwitchToregister}) {
         <dialog 
             className={style.dialog}
             ref={dialogRef}
-            onClose={onClose}
             onClick={handleBackdropClick}
         >
             <div className={style.dialogWrapper}>

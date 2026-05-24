@@ -1,28 +1,37 @@
 "use client";
 
-import { useState } from "react";
 import ChatInput from "@/_components/chat/chatInput/chatInput";
 import MessageContainer from "@/_components/chat/messageContainer/messageContainer";
+import { useChat } from "@/_contexts/chatContext";
+import { toastApi } from "@/_contexts/toastContext";
 import style from "./page.module.css";
 
 export default function Page() {
-    const [messages, setMessages] = useState([]);
+    const {
+        activeChat,
+        messages,
+        isLoadingMessages,
+        isSending,
+        handleSendMessage,
+    } = useChat();
 
-    const handleSendMessage = (text) => {
-        // Obviamente aquí reemplazarías el bot con una llamada a tu API real
-        setMessages(prev => [...prev, { text, sender: 'user' }]);
-        
-        // Simular respuesta del bot para ver cómo funciona el layout
-        setTimeout(() => {
-            setMessages(prev => [...prev, { text: "Esta es una respuesta simulada de la IA.", sender: 'bot' }]);
-        }, 1000);
+    const onSendMessage = async (text) => {
+        try {
+            await handleSendMessage(text);
+        } catch (error) {
+            toastApi.error(error.message || "No se pudo enviar el mensaje");
+        }
     };
-    
+
     return (
         <div className={style.chatPage}>
-            <MessageContainer messages={messages} />
+            <MessageContainer
+                messages={messages}
+                isLoading={isLoadingMessages || isSending}
+                hasActiveChat={messages.length > 0 || Boolean(activeChat)}
+            />
             <div className={style.inputWrapper}>
-                <ChatInput onSendMessage={handleSendMessage} />
+                <ChatInput onSendMessage={onSendMessage} />
             </div>
         </div>
     );

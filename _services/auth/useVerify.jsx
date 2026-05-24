@@ -108,13 +108,13 @@ export default function useVerify({email, open, onClose }) {
         const code = digits.join('');
         setLoading(true);
         try {
-            await fetcher('/auth/verify-account', {
+            await fetcher('/auth/verification-user', {
                 method: 'POST',
                 body: JSON.stringify({email, code})
             });
             
             onClose?.();
-            window.location.href = 'chats';
+            window.location.href = '/chat';
         } 
         catch (error) {
             if(error.code === 'VALIDATION_ERROR') {
