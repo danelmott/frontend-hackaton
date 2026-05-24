@@ -5,7 +5,7 @@ import { toastApi } from "@/_contexts/toastContext";
 import { useModal } from "@/_contexts/modalContext";
 
 export default function useSignup({open, onClose}) {
-    const { openModal, closeModal } = useModal();
+    const { openVerifyModal, closeModal } = useModal();
     const dialogRef = useRef(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -52,11 +52,12 @@ export default function useSignup({open, onClose}) {
         try {
             await fetcher('/auth/register', {method: 'POST', body: JSON.stringify({email, password})})
             closeModal();
-            openModal('verify-modal', { email });
+            openVerifyModal(email);
         } 
         catch (error) {
             if(error.code === 'VALIDATION_ERROR') {
                 toastApi.error('Hubo un error de validacion de datos');
+                return;
             }
             
             toastApi.error(error.message);
@@ -66,7 +67,6 @@ export default function useSignup({open, onClose}) {
         }
     }
     
-    //CERRRAR MODAL SI SE HACE CLICK EN EL BACKDROP
     const handleBackdropClick = (e) => {
         const clickedOnBackdrop = e.target.tagName === 'DIALOG';
         if(clickedOnBackdrop) onClose?.()

@@ -47,7 +47,9 @@ export default function VerifyModal({open, onClose, email}) {
                     
                     <p className={style.subtitle}>
                         Enviamos un código de 6 dígitos a<br />
-                        <span className={style.emailText}>{email}</span>
+                        <span className={style.emailText}>
+                            {email || 'tu correo electrónico'}
+                        </span>
                     </p>
                 </header>
                 

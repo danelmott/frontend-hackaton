@@ -2,11 +2,13 @@
 import { fetcher } from "@/_api/fetcher";
 import { toastApi } from "@/_contexts/toastContext";
 import { useAuth } from "@/_contexts/authContext";
+import { useModal } from "@/_contexts/modalContext";
 import { useEffect, useRef, useState } from "react";
 
 
 export default function useLogin({open, onClose, onSwitchToRegister}) {
     const { refreshUser } = useAuth();
+    const { openVerifyModal } = useModal();
     const dialogRef = useRef(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -24,6 +26,11 @@ export default function useLogin({open, onClose, onSwitchToRegister}) {
 
         if (dialog.open) dialog.close();
     }, [open]);
+
+    const redirectToVerify = (targetEmail) => {
+        onClose?.();
+        openVerifyModal(targetEmail);
+    };
     
     const validate = () => {
         const errors = {};
@@ -48,16 +55,35 @@ export default function useLogin({open, onClose, onSwitchToRegister}) {
             onClose?.()
         } 
         catch (error) {
-            if(error.code === 'INVALID_CREDENTIALS') {
-                toastApi.error('Hubo un error de validacion de datos');
+            if (error.code === 'EMAIL_NOT_VERIFIED') {
+                toastApi.error(error.message || 'Debes verificar tu correo antes de iniciar sesión');
+                redirectToVerify(error.email || email);
+                return;
             }
-            
+
+            if (error.code === 'INVALID_CREDENTIALS') {
+                toastApi.error('Credenciales inválidas');
+                return;
+            }
+
             toastApi.error(error.message);
         }
         finally {
             setLoading(false);
         }
     }
+
+    const handleOpenVerify = () => {
+        if (!email) {
+            setErrors((prev) => ({ ...prev, email: 'Ingresa tu correo para verificar' }));
+            return;
+        }
+        if (!/\S+@\S+\.\S+/.test(email)) {
+            setErrors((prev) => ({ ...prev, email: 'Correo inválido' }));
+            return;
+        }
+        redirectToVerify(email);
+    };
     
     const handleBackdropClick = (e) => {
         const clickedOnBackdrop = e.target.tagName === 'DIALOG';
@@ -79,6 +105,7 @@ export default function useLogin({open, onClose, onSwitchToRegister}) {
         loading,
         handleSubmit,
         handleBackdropClick,
+        handleOpenVerify,
         loginWithGoogle
     };
 }

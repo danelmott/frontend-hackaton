@@ -184,6 +184,22 @@
   padding: 8px 6px;
   scrollbar-width: thin;
   scrollbar-color: #e0e0e0 transparent;
+  min-height: 120px;
+}
+
+.chatListEnter {
+  animation: chatListIn 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes chatListIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .chatList::-webkit-scrollbar {

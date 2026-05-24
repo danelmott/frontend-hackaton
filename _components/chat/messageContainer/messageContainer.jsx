@@ -13,6 +13,18 @@ function TypingIndicator() {
     );
 }
 
+function WelcomeEmpty({ pre, highlight, post = "", subtitle }) {
+    return (
+        <div className={style.empty}>
+            <h1 className={style.welcomeTitle}>
+                {pre} <span className={style.highlight}>{highlight}</span>
+                {post}
+            </h1>
+            <p className={style.welcomeSubtitle}>{subtitle}</p>
+        </div>
+    );
+}
+
 export default function MessageContainer({ messages = [], isLoading = false, hasActiveChat = false }) {
     const containerRef = useRef(null);
     
@@ -25,14 +37,12 @@ export default function MessageContainer({ messages = [], isLoading = false, has
     const renderContent = () => {
         if (!hasActiveChat) {
             return (
-                <div className={style.empty}>
-                    <h1 className={style.welcomeTitle}>
-                        ¿Qué deseas <span className={style.highlight}>aprender</span> hoy?
-                    </h1>
-                    <p className={style.welcomeSubtitle}>
-                        Tu asistente académico inteligente para investigación y estudio profundo.
-                    </p>
-                </div>
+                <WelcomeEmpty
+                    pre="¿Qué deseas"
+                    highlight="financiar"
+                    post=" hoy?"
+                    subtitle="Tu asistente inteligente de Serfinanzas para presupuestos, ahorro, créditos e inversiones."
+                />
             );
         }
 
@@ -46,9 +56,12 @@ export default function MessageContainer({ messages = [], isLoading = false, has
 
         if (messages.length === 0) {
             return (
-                <div className={style.empty}>
-                    <p className={style.welcomeSubtitle}>Inicia la conversación enviando un mensaje.</p>
-                </div>
+                <WelcomeEmpty
+                    pre="¿En qué te ayudamos con tus"
+                    highlight="finanzas"
+                    post="?"
+                    subtitle="Consulta sobre ahorro, presupuesto, metas financieras o productos de Serfinanzas. Escribe tu primera pregunta abajo."
+                />
             );
         }
 

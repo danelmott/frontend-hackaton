@@ -61,10 +61,12 @@
 }
 
 .welcomeTitle {
-    font-size: 36px;
+    font-size: clamp(28px, 5vw, 36px);
     font-weight: 700;
     color: #ffffff;
     margin: 0;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
 }
 
 .highlight {
@@ -76,10 +78,10 @@
 
 .welcomeSubtitle {
     font-size: 16px;
-    color: #8e8e8e;
-    max-width: 320px;
+    color: #a3a3a3;
+    max-width: 420px;
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .typingIndicator {

@@ -25,7 +25,7 @@ function mapMessage(msg) {
 }
 
 export function ChatProvider({ children }) {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const [chats, setChats] = useState([]);
     const [activeChat, setActiveChat] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -37,6 +37,7 @@ export function ChatProvider({ children }) {
     const loadChats = useCallback(async () => {
         if (!user) {
             setChats([]);
+            setIsLoadingChats(false);
             return;
         }
 
@@ -53,8 +54,9 @@ export function ChatProvider({ children }) {
     }, [user]);
 
     useEffect(() => {
+        if (authLoading) return;
         loadChats();
-    }, [loadChats]);
+    }, [authLoading, loadChats]);
 
     const loadMessages = useCallback(async (chatId) => {
         if (!chatId || String(chatId).startsWith('temp-')) {

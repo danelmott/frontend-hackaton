@@ -1,9 +1,11 @@
 'use client';
 import { fetcher } from "@/_api/fetcher";
 import { toastApi } from "@/_contexts/toastContext";
+import { useAuth } from "@/_contexts/authContext";
 import { useEffect, useRef, useState} from "react";
 
 export default function useVerify({email, open, onClose }) {
+    const { refreshUser } = useAuth();
     const TOTAL_DIGITS = 6;
     const RESEND_COOLDOWN_SECS = 60;
     const inputsRef = useRef([]);
@@ -13,7 +15,6 @@ export default function useVerify({email, open, onClose }) {
     const [resendCoolDown, setResendCoolDown] = useState(0);
     const allDigitsFilled = digits.every(Boolean);
     
-    //CUENTA REGRESIVA PARA REENVIO
     useEffect(() => {
         if(resendCoolDown <= 0) return;
         const tick = setTimeout(() => setResendCoolDown(prev => prev - 1), 1000);
@@ -25,7 +26,8 @@ export default function useVerify({email, open, onClose }) {
         const dialog = dialogRef.current;
         if(!dialog) return;
         if(open) {
-            dialog.showModal();
+            if (!dialog.open) dialog.showModal();
+            setDigits(Array(TOTAL_DIGITS).fill(''));
             setTimeout(() => inputsRef.current[0]?.focus(), 50);
         }
         else {
@@ -62,7 +64,7 @@ export default function useVerify({email, open, onClose }) {
     
     const handleDigitKeyDown = (e, idx) => {
         const isFirstDigit = idx === 0;
-        const isLastDigit = idx === TOTAL_DIGITS;
+        const isLastDigit = idx === TOTAL_DIGITS - 1;
         
         if(e.key === 'Backspace') {
             if(digits[idx]) {
@@ -98,13 +100,17 @@ export default function useVerify({email, open, onClose }) {
         focusDigitAt(lastFilledIndex);
     }
     
-    //CERRAR MODAL SI SE HACE CLICK EN EL BACKDROP
     const handleBackdropClick = (e) => {
         const clickedOnBackdrop = e.target.tagName === 'DIALOG';
         if(clickedOnBackdrop) onClose?.();
     }
     
     const handleSubmit = async () => {
+        if (!email) {
+            toastApi.error('No se encontró el correo a verificar');
+            return;
+        }
+
         const code = digits.join('');
         setLoading(true);
         try {
@@ -113,12 +119,15 @@ export default function useVerify({email, open, onClose }) {
                 body: JSON.stringify({email, code})
             });
             
+            await refreshUser();
             onClose?.();
+            toastApi.success('Correo verificado correctamente');
             window.location.href = '/chat';
         } 
         catch (error) {
             if(error.code === 'VALIDATION_ERROR') {
                 toastApi.error('Hubo un error de validacion de datos');
+                return;
             }
             
             toastApi.error(error.message);
@@ -129,19 +138,26 @@ export default function useVerify({email, open, onClose }) {
     }
     
     const handleResendCode = async () => {
-        setResendCoolDown(RESEND_COOLDOWN_SECS);
-        clearAllDigits();
-        setTimeout(() => {focusDigitAt(0), 50});
-        
+        if (!email) {
+            toastApi.error('No se encontró el correo para reenviar el código');
+            return;
+        }
+
         try {
-            await fetcher('/auth/resend-verification', {
+            const data = await fetcher('/auth/resend-verification', {
                 method: 'POST',
                 body: JSON.stringify({email})
             });
+
+            setResendCoolDown(RESEND_COOLDOWN_SECS);
+            clearAllDigits();
+            setTimeout(() => focusDigitAt(0), 50);
+            toastApi.success(data?.message || 'Código reenviado. Revisa tu bandeja de entrada.');
         } 
         catch (error) {
             if(error.code === 'VALIDATION_ERROR') {
                 toastApi.error('Hubo un error de validacion de datos');
+                return;
             }
             
             toastApi.error(error.message);

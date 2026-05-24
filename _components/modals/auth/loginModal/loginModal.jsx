@@ -24,6 +24,7 @@ export default function LoginModal({open, onClose, onSwitchToregister}) {
         setPassword,
         handleBackdropClick,
         handleSubmit,
+        handleOpenVerify,
         loginWithGoogle
     } = useLogin({open, onClose, onSwitchToregister});
     
@@ -88,6 +89,14 @@ export default function LoginModal({open, onClose, onSwitchToregister}) {
                         disabled={loading}
                     >
                         {loading ? 'Verificando': 'Iniciar sesión'}
+                    </button>
+
+                    <button
+                        type="button"
+                        className={style.verifyLink}
+                        onClick={handleOpenVerify}
+                    >
+                        ¿No verificaste tu correo?
                     </button>
                     
                     <div className={style.divider}>

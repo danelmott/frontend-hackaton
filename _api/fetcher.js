@@ -50,11 +50,12 @@ export async function fetcher(endpoint, options = {}) {
     try {
         let response = await fetch(`${API_URL}${endpoint}`, defaultOptions);
 
-        if (response.status === 401 && !shouldAttemptRefresh(endpoint, skipRefresh)) {
+        if ((response.status === 401 || response.status === 403) && !shouldAttemptRefresh(endpoint, skipRefresh)) {
             const data = await parseResponse(response);
             throw {
                 code: data?.code || 'UNAUTHORIZED',
                 message: data?.message || 'No autorizado',
+                email: data?.email,
             };
         }
 

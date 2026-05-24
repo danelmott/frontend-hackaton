@@ -7,11 +7,12 @@ import styles from "./layout.module.css";
 import { ChatProvider } from "@/_contexts/chatContext";
 import { useAuth } from "@/_contexts/authContext";
 import { useModal } from "@/_contexts/modalContext";
+import { MODAL_TYPES } from "@/_constants/modalTypes";
 
 function ChatLayoutContent({ children }) {
     const [isOpen, setIsOpen] = useState(false);
     const { user, loading } = useAuth();
-    const { modal, openModal } = useModal();
+    const { modal, openLoginModal } = useModal();
     const hasPromptedLogin = useRef(false);
 
     useEffect(() => {
@@ -22,11 +23,16 @@ function ChatLayoutContent({ children }) {
             return;
         }
 
-        if (hasPromptedLogin.current || modal.type === 'login') return;
+        const authModalOpen =
+            modal.type === MODAL_TYPES.LOGIN ||
+            modal.type === MODAL_TYPES.SIGNUP ||
+            modal.type === MODAL_TYPES.VERIFY;
+
+        if (hasPromptedLogin.current || authModalOpen) return;
 
         hasPromptedLogin.current = true;
-        openModal('login');
-    }, [loading, user, modal.type, openModal]);
+        openLoginModal();
+    }, [loading, user, modal.type, openLoginModal]);
 
     return (
         <div className={styles.layout}>
