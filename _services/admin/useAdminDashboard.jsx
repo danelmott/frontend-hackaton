@@ -1,31 +1,38 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetcher } from '@/_api/fetcher';
 
 export default function useAdminDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const loadIdRef = useRef(0);
 
-  useEffect(() => {
-    let active = true;
+  const refresh = useCallback(async (silent = false) => {
+    const loadId = ++loadIdRef.current;
+    if (!silent) setLoading(true);
 
-    async function load() {
-      try {
-        setLoading(true);
-        const result = await fetcher('/admin/dashboard', { method: 'GET' });
-        if (active) setData(result);
-      } catch (err) {
-        if (active) setError(err.message || 'Error al cargar dashboard');
-      } finally {
-        if (active) setLoading(false);
+    try {
+      const result = await fetcher('/admin/dashboard', { method: 'GET' });
+      if (loadId === loadIdRef.current) {
+        setData(result);
+        setError(null);
+      }
+    } catch (err) {
+      if (loadId === loadIdRef.current) {
+        setError(err.message || 'Error al cargar dashboard');
+      }
+    } finally {
+      if (loadId === loadIdRef.current && !silent) {
+        setLoading(false);
       }
     }
-
-    load();
-    return () => { active = false; };
   }, []);
 
-  return { data, loading, error };
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { data, loading, error, refresh };
 }

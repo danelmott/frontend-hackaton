@@ -200,6 +200,8 @@ export function ChatProvider({ children }) {
                         prev?.id === chat.id ? { ...prev, title } : prev
                     );
                 }
+
+                return data;
             } catch (error) {
                 setMessages((prev) =>
                     prev.filter(

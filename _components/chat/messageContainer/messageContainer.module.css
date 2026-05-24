@@ -21,13 +21,16 @@
 .message {
     padding: 12px 16px;
     border-radius: 12px;
-    line-height: 1.6;
+    line-height: 1.75;
     color: #ececec;
-    font-size: 16px;
+    font-size: 15px;
+    letter-spacing: -0.011em;
+    font-weight: 400;
     width: fit-content;
     max-width: 100%;
     word-break: break-word;
-    font-family: var(--font-inter, inherit);
+    font-family: var(--font-inter, Inter, system-ui, sans-serif);
+    white-space: pre-wrap;
 }
 
 .user {
@@ -42,12 +45,8 @@
     width: 100%;
     max-width: 100%;
     color: #fff;
-    font-family: var(--font-inter, Inter, sans-serif);
-    font-size: 15px;
-    line-height: 1.75;
-    letter-spacing: -0.011em;
-    font-weight: 400;
     padding: 6px 4px;
+    white-space: normal;
 }
 
 .empty {

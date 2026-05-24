@@ -5,6 +5,7 @@ import Sidebar from "@/_components/chat/sidebar/sidebar";
 import { Icon } from "@/_components/icon/icon";
 import styles from "./layout.module.css";
 import { ChatProvider } from "@/_contexts/chatContext";
+import { ProfileQuestionsProvider } from "@/_contexts/profileQuestionsContext";
 import { useAuth } from "@/_contexts/authContext";
 import { useModal } from "@/_contexts/modalContext";
 import { MODAL_TYPES } from "@/_constants/modalTypes";
@@ -63,7 +64,9 @@ function ChatLayoutContent({ children }) {
 export default function ChatLayout({ children }) {
     return (
         <ChatProvider>
-            <ChatLayoutContent>{children}</ChatLayoutContent>
+            <ProfileQuestionsProvider>
+                <ChatLayoutContent>{children}</ChatLayoutContent>
+            </ProfileQuestionsProvider>
         </ChatProvider>
     );
 }

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import style from "./chatInput.module.css";
 import { Icon } from "../../icon/icon";
 
-export default function ChatInput({ onSendMessage, disabled = false }) {
+export default function ChatInput({ onSendMessage, disabled = false, placeholder = "Pregunta lo que quieras" }) {
   const [message, setMessage] = useState("");
   const textareaRef = useRef(null);
 
@@ -42,7 +42,7 @@ export default function ChatInput({ onSendMessage, disabled = false }) {
         <textarea
           ref={textareaRef}
           className={style.textarea}
-          placeholder="Pregunta lo que quieras"
+          placeholder={placeholder}
           value={message}
           onChange={handleInput}
           onKeyDown={handleKeyDown}

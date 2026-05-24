@@ -10,6 +10,12 @@
   font-size: 0.9375rem;
   font-weight: 500;
   color: #fff;
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
   margin: 0 0 1.25rem;
 }
 
@@ -22,7 +28,18 @@
 .step {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.35rem;
+}
+
+.conversion {
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+.conversion strong {
+  color: #e040fb;
+  font-weight: 600;
 }
 
 .meta {
