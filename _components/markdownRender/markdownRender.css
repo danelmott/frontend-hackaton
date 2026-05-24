@@ -159,3 +159,116 @@
     overflow-x: auto;
     padding: 0.5em 0;
 }
+
+/* Variante chat — fondo oscuro, Inter, texto blanco */
+.markdown-body--chat {
+    font-family: var(--font-inter, Inter, sans-serif);
+    font-size: 15px;
+    line-height: 1.75;
+    color: #fff;
+    letter-spacing: -0.011em;
+    font-weight: 400;
+}
+
+.markdown-body--chat h1,
+.markdown-body--chat h2,
+.markdown-body--chat h3,
+.markdown-body--chat h4 {
+    font-family: var(--font-inter, Inter, sans-serif);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.markdown-body--chat h1 {
+    font-size: 1.5em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 0.35em;
+}
+
+.markdown-body--chat h2 {
+    font-size: 1.25em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.25em;
+}
+
+.markdown-body--chat h3 {
+    font-size: 1.1em;
+}
+
+.markdown-body--chat h4 {
+    font-size: 1em;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.markdown-body--chat p {
+    margin: 0.65em 0;
+    color: #fff;
+}
+
+.markdown-body--chat strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.markdown-body--chat .inline-code {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: rgba(255, 255, 255, 0.08);
+    color: #f0abfc;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.markdown-body--chat .blockquote {
+    border-left-color: #a855f7;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.markdown-body--chat .table-wrapper {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.markdown-body--chat th {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.markdown-body--chat td {
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.markdown-body--chat tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.markdown-body--chat a {
+    color: #f0abfc;
+}
+
+.markdown-body--chat a:hover {
+    border-bottom-color: #f0abfc;
+}
+
+.markdown-body--chat hr {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.markdown-body--chat ul,
+.markdown-body--chat ol {
+    color: #fff;
+}
+
+.markdown-body--chat li {
+    color: #fff;
+}
+
+.markdown-body--chat li::marker {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.markdown-body--chat .katex,
+.markdown-body--chat .katex-display {
+    color: #fff;
+}

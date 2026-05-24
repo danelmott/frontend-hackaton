@@ -1,15 +1,18 @@
 .layout {
     display: flex;
     height: 100vh;
+    height: 100dvh;
     width: 100%;
+    overflow: hidden;
 }
 
 .main {
     display: flex;
     flex-direction: column;
     flex: 1;
-    height: 100vh;
+    min-height: 0;
     min-width: 0;
+    overflow: hidden;
     background-color: #151518;
 }
 

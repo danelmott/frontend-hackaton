@@ -1,6 +1,17 @@
 "use client";
 import { useEffect, useRef } from 'react';
+import MarkdownRenderer from '@/_components/markdownRender/markdownRender';
 import style from './messageContainer.module.css';
+
+function TypingIndicator() {
+    return (
+        <div className={style.typingIndicator} aria-label="El asistente está escribiendo">
+            <span className={style.typingDot} />
+            <span className={style.typingDot} />
+            <span className={style.typingDot} />
+        </div>
+    );
+}
 
 export default function MessageContainer({ messages = [], isLoading = false, hasActiveChat = false }) {
     const containerRef = useRef(null);
@@ -9,10 +20,9 @@ export default function MessageContainer({ messages = [], isLoading = false, has
         if (containerRef.current) {
             containerRef.current.scrollTop = containerRef.current.scrollHeight;
         }
-    }, [messages]);
+    }, [messages, isLoading]);
     
     const renderContent = () => {
-        // Sin chat seleccionado → pantalla de bienvenida
         if (!hasActiveChat) {
             return (
                 <div className={style.empty}>
@@ -26,7 +36,6 @@ export default function MessageContainer({ messages = [], isLoading = false, has
             );
         }
 
-        // Cargando mensajes del chat seleccionado
         if (isLoading) {
             return (
                 <div className={style.empty}>
@@ -35,7 +44,6 @@ export default function MessageContainer({ messages = [], isLoading = false, has
             );
         }
 
-        // Chat seleccionado pero sin mensajes aún
         if (messages.length === 0) {
             return (
                 <div className={style.empty}>
@@ -44,13 +52,18 @@ export default function MessageContainer({ messages = [], isLoading = false, has
             );
         }
 
-        // Mensajes del chat
         return messages.map((msg, index) => (
             <div
                 key={msg.id ?? index}
                 className={`${style.message} ${msg.sender === 'user' ? style.user : style.bot}`}
             >
-                {msg.text}
+                {msg.pending ? (
+                    <TypingIndicator />
+                ) : msg.sender === 'bot' ? (
+                    <MarkdownRenderer content={msg.text} variant="chat" />
+                ) : (
+                    msg.text
+                )}
             </div>
         ));
     };

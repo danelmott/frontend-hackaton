@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import style from "./chatInput.module.css";
 import { Icon } from "../../icon/icon";
 
-export default function ChatInput({ onSendMessage }) {
+export default function ChatInput({ onSendMessage, disabled = false }) {
   const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const textareaRef = useRef(null);
@@ -24,7 +24,7 @@ export default function ChatInput({ onSendMessage }) {
   };
 
   const handleSend = () => {
-    if (message.trim()) {
+    if (message.trim() && !disabled) {
       onSendMessage?.(message);
       setMessage("");
     }
@@ -56,6 +56,7 @@ export default function ChatInput({ onSendMessage }) {
           onChange={handleInput}
           onKeyDown={handleKeyDown}
           rows={1}
+          disabled={disabled}
         />
       </div>
 
@@ -65,6 +66,7 @@ export default function ChatInput({ onSendMessage }) {
             className={`${style.submitButton} ${style.sendAction}`}
             onClick={handleSend}
             aria-label="Enviar mensaje"
+            disabled={disabled}
           >
             <Icon name="arrow_upward" size="md" />
           </button>

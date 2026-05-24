@@ -8,7 +8,7 @@ import { toastApi } from "@/_contexts/toastContext";
 export default function useChatItem(chat) {
     const [menuOpen, setMenuOpen] = useState(false);
     const { openModal } = useModal();
-    const { removeChat, updateChatInList } = useChat();
+    const { activeChat, removeChat, updateChatInList, insertChat, handleSelectChat } = useChat();
     
     const handleAction = async (actionId) => {
         switch(actionId) {
@@ -41,6 +41,9 @@ export default function useChatItem(chat) {
     }
     
     async function handleUpdateChat(newName, chatId) {
+        const previous = { ...chat };
+        updateChatInList({ ...chat, title: newName });
+
         try {
             const data = await fetcher(`/chats/${chatId}`, {
                 method: 'PUT',
@@ -51,6 +54,7 @@ export default function useChatItem(chat) {
             return data;
         } 
         catch (error) {
+            updateChatInList(previous);
             switch(error.code) {
                 case 'CHAT_NOT_FOUND':
                     toastApi.error(error.message || 'No fue posible encontrar el chat que intentas actualizar');
@@ -69,15 +73,23 @@ export default function useChatItem(chat) {
     }
     
     async function handleDeleteChat(chatId) {
+        const snapshot = { ...chat };
+        const wasActive = activeChat?.id === chatId;
+
+        removeChat(chatId);
+
         try {
             const data = await fetcher(`/chats/${chatId}`, {
                 method: 'DELETE'
             });
             
-            removeChat(chatId);
             return data;
         } 
         catch (error) {
+            insertChat(snapshot);
+            if (wasActive) {
+                handleSelectChat(snapshot);
+            }
             switch(error.code) {
                 case 'CHAT_NOT_FOUND':
                     toastApi.error(error.message ||'No fue posible encontrar el chat que intentas eliminar');
@@ -95,16 +107,25 @@ export default function useChatItem(chat) {
         }
     } 
     
-    async function handleArchivedChat(chatId, isArchived) {
+    async function handleArchivedChat(chatId) {
+        const snapshot = { ...chat };
+        const wasActive = activeChat?.id === chatId;
+
+        removeChat(chatId);
+
         try {
             const data = await fetcher(`/chats/${chatId}/archive`, {
                 method: 'PUT',
-                body: JSON.stringify({isArchived})
+                body: JSON.stringify({ isArchived: true })
             });
             
             return data;
         } 
         catch (error) {
+            insertChat(snapshot);
+            if (wasActive) {
+                handleSelectChat(snapshot);
+            }
             switch(error.code) {
                 case 'CHAT_NOT_FOUND':
                     toastApi.error(error.message || 'No fue posible encontrar el chat que intentas archivar');
@@ -125,16 +146,23 @@ export default function useChatItem(chat) {
         }
     }
     
-    async function handleHighlitedChat(chatId, isStarred) {
+    async function handleHighlitedChat(chatId) {
+        const nextStarred = !(chat.isStarred || chat.starred || chat.pinned);
+        const previous = { ...chat };
+
+        updateChatInList({ ...chat, isStarred: nextStarred });
+
         try {
             const data = await fetcher(`/chats/${chatId}/star`, {
                 method: 'PUT',
-                body: JSON.stringify({isStarred})
+                body: JSON.stringify({ isStarred: nextStarred })
             });
             
+            updateChatInList(data);
             return data;
         } 
         catch (error) {
+            updateChatInList(previous);
             switch(error.code) {
                 case ('CHAT_NOT_FOUND'):
                     toastApi.error(error.message || 'No fue posible encontrar el chat que intentas destacar');

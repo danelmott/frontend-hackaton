@@ -1,16 +1,26 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { fetcher } from '@/_api/fetcher';
 import { useAuth } from '@/_contexts/authContext';
 
 const ChatContext = createContext(null);
+
+const DEFAULT_CHAT_TITLE = 'Nuevo chat';
+const TITLE_MAX_LENGTH = 60;
+
+function truncateTitle(text) {
+    const trimmed = text.trim().replace(/\s+/g, ' ');
+    if (trimmed.length <= TITLE_MAX_LENGTH) return trimmed;
+    return `${trimmed.slice(0, TITLE_MAX_LENGTH).trimEnd()}…`;
+}
 
 function mapMessage(msg) {
     return {
         id: msg.id,
         text: msg.content,
         sender: msg.role === 'USER' ? 'user' : 'bot',
+        pending: false,
     };
 }
 
@@ -22,6 +32,7 @@ export function ChatProvider({ children }) {
     const [isLoadingChats, setIsLoadingChats] = useState(false);
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
     const [isSending, setIsSending] = useState(false);
+    const messagesLoadIdRef = useRef(0);
 
     const loadChats = useCallback(async () => {
         if (!user) {
@@ -46,20 +57,26 @@ export function ChatProvider({ children }) {
     }, [loadChats]);
 
     const loadMessages = useCallback(async (chatId) => {
-        if (!chatId) {
+        if (!chatId || String(chatId).startsWith('temp-')) {
             setMessages([]);
             return;
         }
 
+        const loadId = ++messagesLoadIdRef.current;
         setIsLoadingMessages(true);
+
         try {
             const chat = await fetcher(`/chats/${chatId}`);
+            if (loadId !== messagesLoadIdRef.current) return;
             setMessages((chat.messages ?? []).map(mapMessage));
         } catch (error) {
+            if (loadId !== messagesLoadIdRef.current) return;
             console.error('Error cargando mensajes:', error);
             setMessages([]);
         } finally {
-            setIsLoadingMessages(false);
+            if (loadId === messagesLoadIdRef.current) {
+                setIsLoadingMessages(false);
+            }
         }
     }, []);
 
@@ -72,39 +89,79 @@ export function ChatProvider({ children }) {
     );
 
     const handleCreateNewChat = useCallback(async () => {
+        const tempId = `temp-chat-${Date.now()}`;
+        const optimisticChat = {
+            id: tempId,
+            title: DEFAULT_CHAT_TITLE,
+            mode: 'CLIENT',
+            updatedAt: new Date().toISOString(),
+        };
+
+        setChats((prev) => [optimisticChat, ...prev]);
+        setActiveChat(optimisticChat);
+        setMessages([]);
+
         try {
             const newChat = await fetcher('/chats', {
                 method: 'POST',
                 body: JSON.stringify({
-                    title: 'Nuevo chat',
+                    title: DEFAULT_CHAT_TITLE,
                     mode: 'CLIENT',
                 }),
             });
-            setChats((prev) => [newChat, ...prev]);
-            handleSelectChat(newChat);
+            setChats((prev) => prev.map((c) => (c.id === tempId ? newChat : c)));
+            setActiveChat((prev) => (prev?.id === tempId ? newChat : prev));
             return newChat;
         } catch (error) {
+            setChats((prev) => prev.filter((c) => c.id !== tempId));
+            setActiveChat((prev) => (prev?.id === tempId ? null : prev));
             console.error('Error creando chat:', error);
             throw error;
         }
-    }, [handleSelectChat]);
+    }, []);
+
+    const updateChatInList = useCallback((updatedChat) => {
+        setChats((prev) =>
+            prev.map((c) => (c.id === updatedChat.id ? { ...c, ...updatedChat } : c))
+        );
+        setActiveChat((prev) =>
+            prev?.id === updatedChat.id ? { ...prev, ...updatedChat } : prev
+        );
+    }, []);
 
     const handleSendMessage = useCallback(
         async (text) => {
             if (!text.trim()) return;
 
             let chat = activeChat;
+            const isFirstMessage = messages.length === 0;
+
             if (!chat) {
                 chat = await handleCreateNewChat();
             }
+
+            messagesLoadIdRef.current++;
 
             const optimisticUser = {
                 id: `temp-user-${Date.now()}`,
                 text,
                 sender: 'user',
+                pending: false,
             };
-            setMessages((prev) => [...prev, optimisticUser]);
+            const optimisticAssistant = {
+                id: `temp-bot-${Date.now()}`,
+                text: '',
+                sender: 'bot',
+                pending: true,
+            };
+
+            setMessages((prev) => [...prev, optimisticUser, optimisticAssistant]);
             setIsSending(true);
+
+            if (isFirstMessage) {
+                const title = truncateTitle(text);
+                updateChatInList({ ...chat, title, updatedAt: new Date().toISOString() });
+            }
 
             try {
                 const data = await fetcher(`/messages/${chat.id}`, {
@@ -113,46 +170,68 @@ export function ChatProvider({ children }) {
                 });
 
                 setMessages((prev) => [
-                    ...prev.filter((m) => m.id !== optimisticUser.id),
+                    ...prev.filter(
+                        (m) => m.id !== optimisticUser.id && m.id !== optimisticAssistant.id
+                    ),
                     mapMessage(data.userMessage),
                     mapMessage(data.assistantMessage),
                 ]);
 
                 setChats((prev) => {
-                    const updated = prev.map((c) =>
-                        c.id === chat.id ? { ...c, updatedAt: new Date().toISOString() } : c
-                    );
+                    const title = data.chatTitle ?? (isFirstMessage ? truncateTitle(text) : undefined);
+                    const updated = prev.map((c) => {
+                        if (c.id !== chat.id) return c;
+                        return {
+                            ...c,
+                            ...(title ? { title } : {}),
+                            updatedAt: new Date().toISOString(),
+                        };
+                    });
                     return updated.sort(
                         (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
                     );
                 });
+
+                if (data.chatTitle || isFirstMessage) {
+                    const title = data.chatTitle ?? truncateTitle(text);
+                    setActiveChat((prev) =>
+                        prev?.id === chat.id ? { ...prev, title } : prev
+                    );
+                }
             } catch (error) {
-                setMessages((prev) => prev.filter((m) => m.id !== optimisticUser.id));
+                setMessages((prev) =>
+                    prev.filter(
+                        (m) => m.id !== optimisticUser.id && m.id !== optimisticAssistant.id
+                    )
+                );
                 console.error('Error enviando mensaje:', error);
                 throw error;
             } finally {
                 setIsSending(false);
             }
         },
-        [activeChat, handleCreateNewChat]
+        [activeChat, handleCreateNewChat, messages.length, updateChatInList]
     );
 
     const removeChat = useCallback((chatId) => {
         setChats((prev) => prev.filter((c) => c.id !== chatId));
-        if (activeChat?.id === chatId) {
-            setActiveChat(null);
-            setMessages([]);
-        }
-    }, [activeChat]);
+        setActiveChat((prev) => {
+            if (prev?.id === chatId) {
+                setMessages([]);
+                return null;
+            }
+            return prev;
+        });
+    }, []);
 
-    const updateChatInList = useCallback((updatedChat) => {
-        setChats((prev) =>
-            prev.map((c) => (c.id === updatedChat.id ? { ...c, ...updatedChat } : c))
-        );
-        if (activeChat?.id === updatedChat.id) {
-            setActiveChat((prev) => ({ ...prev, ...updatedChat }));
-        }
-    }, [activeChat]);
+    const insertChat = useCallback((chat) => {
+        setChats((prev) => {
+            if (prev.some((c) => c.id === chat.id)) return prev;
+            return [chat, ...prev].sort(
+                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+            );
+        });
+    }, []);
 
     const value = useMemo(
         () => ({
@@ -168,6 +247,7 @@ export function ChatProvider({ children }) {
             handleSendMessage,
             removeChat,
             updateChatInList,
+            insertChat,
         }),
         [
             chats,
@@ -182,6 +262,7 @@ export function ChatProvider({ children }) {
             handleSendMessage,
             removeChat,
             updateChatInList,
+            insertChat,
         ]
     );
 

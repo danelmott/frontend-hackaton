@@ -27,11 +27,11 @@ export default function Page() {
         <div className={style.chatPage}>
             <MessageContainer
                 messages={messages}
-                isLoading={isLoadingMessages || isSending}
+                isLoading={isLoadingMessages}
                 hasActiveChat={messages.length > 0 || Boolean(activeChat)}
             />
             <div className={style.inputWrapper}>
-                <ChatInput onSendMessage={onSendMessage} />
+                <ChatInput onSendMessage={onSendMessage} disabled={isSending} />
             </div>
         </div>
     );

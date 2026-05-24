@@ -6,7 +6,6 @@ import { useAuth } from '@/_contexts/authContext';
 import { Icon } from '@/_components/icon/icon';
 import Image from 'next/image';
 import UserSection from './UserSection/userSection';
-import Subject from './subject/subject';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const {
@@ -17,11 +16,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     handleCreateNewChat,
   } = useChat();
   const { user } = useAuth();
-
-  const demoSubjects = [
-    { id: 's1', title: 'Álgebra Lineal' },
-    { id: 's2', title: 'Desarrollo Web' },
-  ];
 
   const displayUser = user
     ? {
@@ -34,8 +28,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         email: 'Inicia sesión',
         src: '',
       };
-
-  const recentChats = chats;
 
   return (
     <>
@@ -72,10 +64,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               <Icon name='add' size='md'/>
               Crear Chat
             </button>
-            <button className={styles.actionButton} style={{ marginBottom: "10px" }}>
-              <Icon name='search' size='md'/>
-              Buscar Chat
-            </button>
           </div>
           
           <nav className={styles.chatList}>
@@ -83,23 +71,14 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               <p className={styles.sectionLabel}>Cargando chats...</p>
             )}
 
-            {!isLoadingChats && recentChats.length === 0 && user && (
+            {!isLoadingChats && chats.length === 0 && user && (
               <p className={styles.sectionLabel}>No tienes chats aún</p>
             )}
-
-            {demoSubjects.length > 0 && (
-              <div className={styles.section}>
-                <span className={styles.sectionLabel}>Asignaturas</span>
-                {demoSubjects.map((subject) => (
-                  <Subject key={subject.id} subject={subject}/>
-                ))}
-              </div>
-            )}
             
-            {recentChats.length > 0 && (
+            {chats.length > 0 && (
               <div className={styles.section}>
                 <span className={styles.sectionLabel}>Recientes</span>
-                {recentChats.map((chat) => (
+                {chats.map((chat) => (
                   <ChatItem
                     key={chat.id}
                     chat={chat}
@@ -110,13 +89,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               </div>
             )}
           </nav>
-          
-          <div className={styles.feedbackContainer}>
-            <a href="/feedback" className={styles.feedbackButton}>
-              <Icon name="lightbulb" size="sm" />
-              <span>Enviar Feedback</span>
-            </a>
-          </div>
           
           <UserSection user={displayUser}/>
         </div>
