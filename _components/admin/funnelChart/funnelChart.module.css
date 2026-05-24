@@ -1,0 +1,47 @@
+.section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.5rem;
+  font-family: var(--font-inter);
+}
+
+.title {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #fff;
+  margin: 0 0 1.25rem;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  min-width: 4px;
+}
